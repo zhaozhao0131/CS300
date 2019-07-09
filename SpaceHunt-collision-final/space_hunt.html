@@ -1,0 +1,405 @@
+<!--SPACE HUNT: A project by Team 1, CS 300, Winter 2019.
+    Contributors: Dylan Wagner, Max Smiley, Kim Ma, 
+                  Jiacheng Zhao, Illia Shershun, Amie Roten
+
+    Visual Credits: 
+    Asteroid: https://opengameart.org/content/brown-asteroid by FunwithPixels
+    Space Ship: http://millionthvector.blogspot.com/p/free-sprites.html by MillionthVector
+    Blue Planet: https://opengameart.org/content/azuria-a-2-d-ringed-planet by Molly "Cougarmint" Willits
+    Background: https://www.pexels.com/photo/sky-space-milky-way-stars-110854/
+    Dock: https://opengameart.org/content/space-carrier by Naks Rifati
+    Space Station: https://www.kisspng.com/png-international-space-station-orbital-spaceflight-ou-934164/ Artist unknown.
+    Meteor: http://pngimg.com/download/63888 Artist unknown.
+    Wormhole: http://www.sclance.com/pngs/wormhole-png/download.php?file=./wormhole_png_1538171.png Artist unknown.
+    
+
+
+
+-->
+
+
+<!DOCTYPE html>
+    <head>
+         <meta charset="UTF-8">
+        <script src="Map.js"></script>
+        <script src="Ship.js"></script>
+        <script src="Game.js"></script>
+        <script src='Menu.js'></script>
+        <script src="Persist.js"></script>
+        <title>Space Hunt</title>
+        <style>
+            input[type=range]
+            {
+                -webkit-appearance: none;
+                width: 35%;
+                height:15px;
+                -webkit-border-radius: 1em;
+                border-radius: 1em;
+
+                -webkit-background-clip: padding;
+                background-clip: padding-box;
+                border: 1px solid #aaa;
+                background: #eee;
+            }
+
+            input[type="range"]::-webkit-slider-thumb
+            {
+                -webkit-appearance: none;
+                width: 28px;
+                height: 28px;
+                border: 1px solid #044062;
+                background: #396b9e;
+                background-image: linear-gradient(#5f9cc5,#396b9e);
+                -webkit-box-shadow: 0 1px 3px rgba(0,0,0,.2);
+                box-shadow: 0 1px 3px rgba(0,0,0,.2);
+                cursor: pointer;
+                -webkit-border-radius: 1em;
+                border-radius: 1em;
+                border-top: 1px solid #fff;
+                border-color: rgba(255,255,255,.3);
+            }
+
+
+            .switch
+            {
+                position: relative;
+                display: inline-block;
+                width: 40px;
+                height: 20px;
+            }
+
+            .switch input
+            {
+                opacity: 0;
+                width: 0;
+                height: 0;
+            }
+
+            .slider
+            {
+                position: absolute;
+                cursor: pointer;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: #ccc;
+                -webkit-transition: .4s;
+                transition: .4s;
+            }
+
+            .slider:before
+            {
+                position: absolute;
+                content: "";
+                height: 15px;
+                width: 15px;
+                left: 2px;
+                bottom: 2px;
+                background-color: white;
+                -webkit-transition: .4s;
+                transition: .4s;
+            }
+
+            input:checked + .slider
+            {
+                background-color: #2196F3;
+            }
+
+            input:focus + .slider
+            {
+                box-shadow: 0 0 1px #2196F3;
+            }
+
+            input:checked + .slider:before
+            {
+                -webkit-transform: translateX(20px);
+                -ms-transform: translateX(20px);
+                transform: translateX(20px);
+            }
+
+            body
+            {
+                background-image: url("background.jpg");
+                color: #fff;
+                font-family: sans-serif;
+                font-size: 2em;
+                text-align: center;
+            }
+
+
+            #game
+            {
+                background: transparent;
+                height: 608px;
+                width: 608px;
+                position: absolute;
+                top:50px;
+                left:50px;
+            }
+            #minimap
+            {
+                position: absolute;
+                top: 10%;
+                left: 50%;
+                border: 2px solid darkblue;
+            }
+            #main
+            {
+                display: none;
+            }
+            #newGame, #backBtn, #settBtn, #creditBtn
+            {
+                text-align: center;
+                border: 2px solid rgba(50,50,50,1);
+                border-radius: 7px;
+                background-color: rgba(184,184,184,.7);
+                color: rgba(50,50,50,1);
+                font-size: 32px;
+                font-weight: bold;
+                font-family: "Courier New";
+                width: 5em;
+                margin: 5px auto;
+            }
+            #loadBtn
+            {
+                text-align: center;
+                vertical-align: middle;
+                border: 2px solid rgba(50,50,50,1);
+                border-radius: 7px;
+                background-color: rgba(184,184,184,.7);
+                color: rgba(50,50,50,1);
+                font-size: 32px;
+                font-weight: bold;
+                font-family: "Courier New";
+                width: 5em;
+                margin: 5px auto;
+            }
+            #theHead
+            {
+                margin: auto;
+                color: gray;
+                font-weight: bold;
+                font-size: 2em;
+                font-family: "Courier New";
+            }
+            #credits
+            {
+                margin: auto;
+                color: gray;
+                font-weight: bold;
+                font-size: 1em;
+                font-family: "Courier New";
+                display: none;
+                background-color: inherit;
+            }
+
+            #setStart, #addWorm, #addStation, #addAst, #addFreighter, #addMeteors
+          
+            {
+                text-align: center;
+                vertical-align: middle;
+                border: 2px solid rgba(50,50,50,1);
+                border-radius: 7px;
+                background-color: rgba(184,184,184,.7);
+                color: rgba(50,50,50,1);
+                font-size: 32px;
+                font-weight: bold;
+                font-family: "Courier New";
+                width: 10em;
+                margin: 5px auto;
+            }
+            #backBtn
+            {
+                display: none;
+            }
+            .stngs
+            {
+                display: none;
+            }
+            .optional
+            {
+                display: none;
+            }
+
+
+            #upBtn, #downBtn, #leftBtn, #rightBtn
+            {
+                text-align: center;
+                vertical-align: middle;
+                border: 2px solid rgba(50,50,50,1);
+                border-radius: 7px;
+                background-color: rgba(184,184,184,.7);
+                color: rgba(50,50,50,1);
+                font-size: 32px;
+                font-weight: bold;
+                font-family: "Courier New";
+                width: 6em;
+                margin: 15px auto;
+
+                display:none;
+                float: right;
+                clear: both;
+                width: 30%;
+
+            }
+            #distScroll
+            {
+                display: none;
+                width: 31%;
+                height: 6cm;
+                float: right;
+                clear: both;
+            }
+            #saveBtn, #sensBtn
+            {
+                text-align: center;
+                vertical-align: middle;
+                border: 2px solid rgba(50,50,50,1);
+                border-radius: 7px;
+                background-color: rgba(184,184,184,.7);
+                color: rgba(50,50,50,1);
+                font-size: 32px;
+                font-weight: bold;
+                font-family: "Courier New";
+                width: 6em;
+                margin: 15px auto;
+
+                display:none;
+                float: right;
+                clear: both;
+                width: 30%;
+            }
+
+            #list
+            {
+                position: absolute;
+                top: 40%;
+                left: 42%;
+                display: none;
+                font-size: 16px;
+            }
+
+
+            nav ul{height:200px; width:25%;}
+            nav ul{overflow:hidden; overflow-y:scroll;}
+
+        </style>
+    </head>
+    <body>
+        <!--<embed id = "music" src="./audio/back_music.mp3" autostart="false" loop="true" hidden="true">  -->
+        <nav style="background-color: #ffe7e8; border: 10px; border-color: red"> 
+            <p style="margin: 10px; line-height: 1.5; text-align: right; border: 10px; border-color: red">
+                <ul id = "list">
+                    <h4> GAZETTEER: </h4>
+
+                </ul>
+            
+        </nav>
+        <div>
+            <div id="distScroll">
+                <p>Distance:</p>
+                0<input type="range" min="0" max="10" value="0" step="1" oninput="changeDistance(this.value)">
+                <output id="distanceOut"></output>
+            </div>
+        </div>
+        <div>
+            <div id="upBtn" onmouseover="this.style.backgroundColor = 'rgba(184,184,184,1)'" onmouseout="this.style.backgroundColor = 'rgba(184,184,184,0.7)'" onclick="submitCourse(0)">Move Up</div>
+        </div>
+        <div>
+            <div id="downBtn" onmouseover="this.style.backgroundColor = 'rgba(184,184,184,1)'" onmouseout="this.style.backgroundColor = 'rgba(184,184,184,0.7)'" onclick="submitCourse(1)">Move Down</div>
+        </div>
+        <div>
+            <div id="leftBtn" onmouseover="this.style.backgroundColor = 'rgba(184,184,184,1)'" onmouseout="this.style.backgroundColor = 'rgba(184,184,184,0.7)'" onclick="submitCourse(2)">Move Left</div>
+        </div>
+        <div>
+            <div id="rightBtn" onmouseover="this.style.backgroundColor = 'rgba(184,184,184,1)'" onmouseout="this.style.backgroundColor = 'rgba(184,184,184,0.7)'" onclick="submitCourse(3)">Move Right</div>
+        </div>
+        <div>
+            <div id="sensBtn" onmouseover="this.style.backgroundColor = 'rgba(184,184,184,1)'" onmouseout="this.style.backgroundColor = 'rgba(184,184,184,0.7)'" onclick="submitSensor()">Engage Sensor</div>
+        </div>
+        <div>
+            <div id="saveBtn" onmouseover="this.style.backgroundColor = 'rgba(184,184,184,1)'" onmouseout="this.style.backgroundColor = 'rgba(184,184,184,0.7)'" onclick="save()">Save Game</div>
+        </div>
+
+        <div id="theHead">Welcome to Space Hunt!</div>
+        <div id="newGame" onclick="runGame()" onmouseover="this.style.backgroundColor = 'rgba(184,184,184,1)'" onmouseout="this.style.backgroundColor = 'rgba(184,184,184,0.7)'">New Game</div>
+
+
+        <div id="loadBtn" onmouseover="this.style.backgroundColor = 'rgba(184,184,184,1)'" onmouseout="this.style.backgroundColor = 'rgba(184,184,184,0.7)'" onclick="load()">Load</div>
+
+
+        <div id="settBtn" onmouseover="this.style.backgroundColor = 'rgba(184,184,184,1)'" onmouseout="this.style.backgroundColor = 'rgba(184,184,184,0.7)'" onclick="settMen()">Settings</div>
+        <div id="creditBtn" onmouseover="this.style.backgroundColor = 'rgba(184,184,184,1)'" onmouseout="this.style.backgroundColor = 'rgba(184,184,184,0.7)'" onclick="showCredits()">Credits</div>
+        <div id="credits">Testing</div>
+        <div id="main">
+        <div id="score"></div>
+        <canvas id="game" width="608" height="608"></canvas>
+        <canvas id="minimap" width="192" height="192"></canvas>
+        </div>
+        <div class="stngs">
+            <p>Initial Energy:</p>
+            1000<input type="range" min="0" max="10000" value="1000" step="100" oninput="changeEnergy(this.value)">
+            <output id="energyOut"></output>
+        </div>
+        <div class="stngs">
+            <p>Initial Supplies:</p>
+            100<input type="range" min="0" max="100" value="100" step="2" oninput="changeSupplies(this.value)">
+            <output id="suppliesOut"></output>
+        </div>
+        <div class="stngs">
+            <p>Initial Credits:</p>
+            1000<input type="range" min="0" max="10000" value="1000" step="100" oninput="changeCredits(this.value)">
+            <output id="creditsOut"></output>
+        </div>
+        <div class="stngs">
+            <p>Initial Map Size (N x M):</p>
+            128<input type="range" min="32" max="255" value="132" step="1" oninput="changeMap(this.value)">
+            <output id="mapOut"></output>
+        </div>
+        <div class="stngs">
+            <p>Fixed Starting Position</p>
+            <label class="switch">
+                <input type="checkbox" oninput="changeStartPos(this.checked)">
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="optional"
+        id="setStart" onmouseover="this.style.backgroundColor = 'rgba(184,184,184,1)'" onmouseout="this.style.backgroundColor = 'rgba(184,184,184,0.7)'" onclick="setStartPos()">Set Start Position</div>
+        <div class="stngs">
+            <p>Fixed Wormhole Behavior</p>
+            <label class="switch">
+                <input type="checkbox" oninput="changeWormBehav(this.checked)">
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="stngs">
+            <p>Unlimited Play</p>
+            <label class="switch">
+                <input type="checkbox" oninput="changeUnlim(this.checked)">
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="stngs">
+            <p>Fixed Map</p>
+            <label class="switch">
+                <input type="checkbox" oninput="changeFixMap(this.checked)">
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="optional"
+        id="addWorm" onmouseover="this.style.backgroundColor = 'rgba(184,184,184,1)'" onmouseout="this.style.backgroundColor = 'rgba(184,184,184,0.7)'" onclick="addObject(0)">Add Wormhole</div>
+        <div class="optional"
+        id="addStation" onmouseover="this.style.backgroundColor = 'rgba(184,184,184,1)'" onmouseout="this.style.backgroundColor = 'rgba(184,184,184,0.7)'" onclick="addObject(2)">Add Station</div>
+        <div class="optional"
+        id="addAst" onmouseover="this.style.backgroundColor = 'rgba(184,184,184,1)'" onmouseout="this.style.backgroundColor = 'rgba(184,184,184,0.7)'" onclick="addObject(1)">Add Asteroid</div>
+        <div class="optional"
+        id="addFreighter" onmouseover="this.style.backgroundColor = 'rgba(184,184,184,1)'" onmouseout="this.style.backgroundColor = 'rgba(184,184,184,0.7)'" onclick="addObject(4)">Add Freighter</div>
+
+        <div class="optional"
+        id="addMeteors" onmouseover="this.style.backgroundColor = 'rgba(184,184,184,1)'" onmouseout="this.style.backgroundColor = 'rgba(184,184,184,0.7)'" onclick="addObject(5)">Add Meteors</div>
+        
+
+        <div id="backBtn" onmouseover="this.style.backgroundColor = 'rgba(184,184,184,1)'" onmouseout="this.style.backgroundColor = 'rgba(184,184,184,0.7)'" onclick="goBack()">Back</div>
+    </body>
+</html>
